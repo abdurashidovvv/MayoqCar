@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    tools:context=".view.SignUpFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/liner_layout"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="15dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:fontFamily="@font/interbold"
+                    android:text="Ro'yhatdan o'ting"
+                    android:textColor="#1F313D"
+                    android:textSize="30dp" />
+
+                <EditText
+                    android:id="@+id/edt_login"
+                    style="@style/register_edittext_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:hint="login"
+                    android:inputType="text" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginBottom="20dp">
+
+                    <EditText
+                        android:id="@+id/edt_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/signin_edittext_background"
+                        android:hint="parol"
+                        android:inputType="textPassword"
+                        android:paddingHorizontal="10dp"
+                        android:textColor="#333333"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:id="@+id/show_btn"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/password_icon" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <EditText
+                    android:id="@+id/edt_name"
+                    style="@style/register_edittext_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:hint="ism familiya"
+                    android:inputType="text"
+                    tools:ignore="TextFields" />
+
+                <EditText
+                    android:id="@+id/edt_job"
+                    style="@style/register_edittext_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:hint="kasb"
+                    android:inputType="text"
+                    tools:ignore="TextFields" />
+
+                <EditText
+                    android:id="@+id/edt_address"
+                    style="@style/register_edittext_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:hint="ish joyi"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/edt_history"
+                    style="@style/register_edittext_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:hint="kasallik tarixi"
+                    android:inputType="text" />
+
+                <EditText
+                    android:id="@+id/edt_position"
+                    style="@style/register_edittext_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:hint="lavozimi"
+                    android:inputType="text"
+                    tools:ignore="TextFields" />
+
+                <EditText
+                    android:id="@+id/edt_phone_number"
+                    style="@style/register_edittext_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:hint="+998 _"
+                    android:inputType="text"
+                    tools:ignore="TextFields" />
+
+                <TextView
+                    android:id="@+id/photo"
+                    style="@style/register_edittext_style"
+                    android:layout_width="120dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/signin_edittext_background"
+                    android:gravity="center"
+                    android:hint="Rasm qo'shish"
+                    android:inputType="text"
+                    android:textSize="14sp"
+                    tools:ignore="TextFields" />
+            </LinearLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/next_btn"
+                app:cornerRadius="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/liner_layout"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:backgroundTint="#4387C5"
+                android:text="Davom etish" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

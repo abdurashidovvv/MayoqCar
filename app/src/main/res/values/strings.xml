@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MayoqCar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_fragment_tv">Xar bir fuqaroning sog’ligi tinchligi biz\nuchun muhim. Shuning uchun iltimos\no’z ishingizga mas’uliyat bilan bajarishingizni\nso’rab qolamiz, zero har bir bemor, \njabrlanuvchi sizni ishingizda mamnun bo’lsin.</string>
+</resources>
