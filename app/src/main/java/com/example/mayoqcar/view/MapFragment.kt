@@ -84,7 +84,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
         for (marker in markerList) {
             marker.remove()
         }
-        Log.d("RealTimeLocation", "onLocationReceived: ")
+        Log.d("RealTimeLocation", "onLocationReceived: $markerList")
         val updates = mutableMapOf<String, Any>()
         updates["lat"] = "${location.latitude}"
         updates["long"] = "${location.longitude}"
