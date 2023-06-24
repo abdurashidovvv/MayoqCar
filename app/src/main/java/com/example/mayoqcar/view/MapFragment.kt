@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.example.mayoqcar.R
 import com.example.mayoqcar.databinding.FragmentMapBinding
+import com.example.mayoqcar.models.Call
 import com.example.mayoqcar.repository.MapRepository
 import com.example.mayoqcar.repository.RegisterRepository
 import com.example.mayoqcar.utils.LocationService
@@ -26,8 +27,14 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationListener {
+class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationListener,
+    CoroutineScope {
 
     private val binding by lazy { FragmentMapBinding.inflate(layoutInflater) }
     private lateinit var mapFragment: SupportMapFragment
@@ -80,7 +87,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
 
     override fun onLocationReceived(location: Location) {
 
-        val markerList=ArrayList<Marker>()
+        val markerList = ArrayList<Marker>()
         for (marker in markerList) {
             marker.remove()
         }
@@ -90,11 +97,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
         updates["long"] = "${location.longitude}"
         currentLocation = LatLng(location.latitude, location.longitude)
 
+        getUser(currentLocation)
+
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
 
         // Add marker to the map
         val markerPosition = LatLng(currentLocation.latitude, currentLocation.longitude)
-        val marker=googleMap.addMarker(
+        val marker = googleMap.addMarker(
             MarkerOptions().position(markerPosition).title("Sizning manzilingiz")
         )
         markerList.add(marker!!)
@@ -103,5 +112,38 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
         val databaseReference = FirebaseDatabase.getInstance().reference.child("workers")
         databaseReference.child(MySharedPreference.getWorker().id.toString())
             .updateChildren(updates)
+    }
+
+    override val coroutineContext: CoroutineContext
+        get() = Job()
+
+    fun getUser(location: LatLng) {
+
+        val calls = ArrayList<Call>()
+
+        launch {
+            mapViewModel.getAllCalls().collectLatest {
+                calls.addAll(it)
+                Log.d("EmergenixCalls", "getUser: $it")
+                for (call in it) {
+//                    Log.d("updateCall", "getUser: $call")
+                    if (call.worker_id == null) {
+                        Log.d("updateCall", "getUser: $call")
+                        val updates = mutableMapOf<String, Any>()
+                        updates["worker_id"] = "${MySharedPreference.getWorker().id}"
+                        updates["worker_location_lat"] = "${location.latitude}"
+                        updates["worker_location_long"] = "${location.longitude}"
+
+
+                        val databaseReference = FirebaseDatabase.getInstance().reference.child("emergency_calls")
+                        databaseReference.child(call.id.toString())
+                            .updateChildren(updates)
+
+                        break
+                    }
+                }
+            }
+        }
+
     }
 }
