@@ -137,8 +137,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
                         Log.d("updateCall", "getUser: $call")
                         val updates = mutableMapOf<String, Any>()
                         updates["worker_id"] = "${MySharedPreference.getWorker().id}"
-                        updates["worker_location_lat"] = "${location.latitude}"
-                        updates["worker_location_long"] = "${location.longitude}"
+                        updates["worker_location_lat"] = location.latitude.toString()
+                        updates["worker_location_long"] = location.longitude.toString()
 
 
                         val databaseReference =
