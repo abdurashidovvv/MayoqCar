@@ -1,5 +1,7 @@
 package com.example.mayoqcar.view
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.mayoqcar.R
 import com.example.mayoqcar.databinding.FragmentMapBinding
@@ -47,9 +50,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
     private lateinit var mapViewModelFactory: MapViewModelFactory
     private lateinit var mapViewModel: MapViewModel
     private lateinit var currentLocation: LatLng
+    private val LOCATION_PERMISSION_REQUEST_CODE = 100
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
 
         registerRepository = RegisterRepository()
@@ -60,9 +63,12 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
 
         mapRepository = MapRepository()
         mapViewModelFactory = MapViewModelFactory(mapRepository)
-        mapViewModel =
-            ViewModelProvider(this, mapViewModelFactory)[MapViewModel::class.java]
+        mapViewModel = ViewModelProvider(this, mapViewModelFactory)[MapViewModel::class.java]
 
+
+        if (!checkLocationPermissions()) {
+            requestLocationPermissions()
+        }
 
         locationService = LocationService(binding.root.context)
 
@@ -135,12 +141,86 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
                         updates["worker_location_long"] = "${location.longitude}"
 
 
-                        val databaseReference = FirebaseDatabase.getInstance().reference.child("emergency_calls")
-                        databaseReference.child(call.id.toString())
-                            .updateChildren(updates)
+                        val databaseReference =
+                            FirebaseDatabase.getInstance().reference.child("emergency_calls")
+                        databaseReference.child(call.id.toString()).updateChildren(updates)
+
+//                        val coordinates = listOf(
+//                            LatLng(
+//                                call.user_location_lat!!.toDouble(),
+//                                call.user_location_long!!.toDouble()
+//                            ),
+//                            LatLng(
+//                                call.worker_location_lat!!.toDouble(),
+//                                call.worker_location_long!!.toDouble()
+//                            ),
+//                        )
+
+
+                        /*Marker*/
+                        val markerPosition = LatLng(
+                            call.user_location_lat!!.toDouble(),
+                            call.user_location_long!!.toDouble()
+                        )
+                        val marker = googleMap.addMarker(
+                            MarkerOptions().position(markerPosition).title("Sizning manzilingiz")
+                        )
+
+                        /*PolyLine*/
+//                        val polylineOptions = PolylineOptions().addAll(coordinates)
+//                            .color(Color.RED) // Set the color of the polyline
+//
+//                        googleMap.addPolyline(polylineOptions)
+//
+//                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordinates[0], 12f)
+//                        googleMap.moveCamera(cameraUpdate)
 
                         break
                     }
+                }
+            }
+        }
+    }
+
+
+    private fun checkLocationPermissions(): Boolean {
+        val fineLocationPermission = ActivityCompat.checkSelfPermission(
+            binding.root.context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        val coarseLocationPermission = ActivityCompat.checkSelfPermission(
+            binding.root.context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        return fineLocationPermission == PackageManager.PERMISSION_GRANTED &&
+                coarseLocationPermission == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestLocationPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+
+        ActivityCompat.requestPermissions(requireActivity(), permissions, LOCATION_PERMISSION_REQUEST_CODE)
+    }
+
+    // Handle the permission request result
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted, handle the location-related task
+                    // ...
+                } else {
+                    // Permission denied, handle accordingly (e.g., show an error message)
+                    // ...
                 }
             }
         }

@@ -86,8 +86,8 @@ class SignUpFragment : Fragment(), CoroutineScope {
             medical_history = medicalHistory,
             position = position,
             phoneNumber = phoneNumber,
-            lat = null,
-            long = null,
+            lat = "",
+            long = "",
             car_number = "A375AA",
             imageLink = photoUri
         )

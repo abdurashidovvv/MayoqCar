@@ -50,9 +50,14 @@ class SmsCodeFragment : Fragment(), CoroutineScope {
         registerViewModel =
             ViewModelProvider(this, registerViewModelFactory)[RegisterViewModel::class.java]
 
+        if (MySharedPreference.getWorker().fullName != null) {
+            findNavController().popBackStack()
+        }
+
         auth = FirebaseAuth.getInstance()
         val phoneNumber = MyData.worker!!.phoneNumber
         sentVerificationCode(phoneNumber.toString())
+
 
         binding.nextBtn.setOnClickListener {
             var text = binding.edtPassword.text.toString()
