@@ -34,10 +34,15 @@ class SignInFragment : Fragment(), CoroutineScope {
         savedInstanceState: Bundle?
     ): View {
 
-        registerRepository=RegisterRepository()
-        registerViewModelFactory=RegisterViewModelFactory(registerRepository)
-        registerViewModel=
+        registerRepository = RegisterRepository()
+        registerViewModelFactory = RegisterViewModelFactory(registerRepository)
+        registerViewModel =
             ViewModelProvider(this, registerViewModelFactory)[RegisterViewModel::class.java]
+
+
+        if (MySharedPreference.getWorker().fullName != null) {
+            findNavController().popBackStack()
+        }
 
         val list = ArrayList<Worker>()
         launch {

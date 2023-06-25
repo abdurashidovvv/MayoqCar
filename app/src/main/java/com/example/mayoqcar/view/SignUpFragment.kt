@@ -45,6 +45,11 @@ class SignUpFragment : Fragment(), CoroutineScope {
         registerViewModel =
             ViewModelProvider(this, registerViewModelFactory)[RegisterViewModel::class.java]
 
+
+        if (MySharedPreference.getWorker().fullName != null) {
+            findNavController().popBackStack()
+        }
+
         firebaseStorage = FirebaseStorage.getInstance()
         reference = firebaseStorage.getReference("user_images")
 
