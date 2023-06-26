@@ -57,7 +57,7 @@ class SignInFragment : Fragment(), CoroutineScope {
                 if (user.login == binding.edtLogin.text.toString() && user.parol == binding.edtPassword.text.toString()) {
                     MySharedPreference.init(binding.root.context)
                     MySharedPreference.setUser(user)
-                    findNavController().navigate(R.id.menuFragment)
+                    findNavController().navigate(R.id.mapFragment)
                 }
             }
         }

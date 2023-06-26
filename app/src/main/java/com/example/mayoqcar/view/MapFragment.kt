@@ -2,6 +2,7 @@ package com.example.mayoqcar.view
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.mayoqcar.R
@@ -29,8 +31,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -51,6 +56,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
     private lateinit var mapViewModel: MapViewModel
     private lateinit var currentLocation: LatLng
     private val LOCATION_PERMISSION_REQUEST_CODE = 100
+    private var marker: Marker? = null
+    private var polyline: Polyline? = null
+    private var isZoom: Boolean = true
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -105,7 +113,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
 
         getUser(currentLocation)
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
+        if (isZoom) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
+            isZoom = false
+        }
 
         // Add marker to the map
         val markerPosition = LatLng(currentLocation.latitude, currentLocation.longitude)
@@ -127,13 +138,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
 
         val calls = ArrayList<Call>()
 
-        launch {
+        launch(Dispatchers.Main) {
             mapViewModel.getAllCalls().collectLatest {
                 calls.addAll(it)
-                Log.d("EmergenixCalls", "getUser: $it")
+//                Log.d("EmergenixCalls", "getUser: $it")
                 for (call in it) {
 //                    Log.d("updateCall", "getUser: $call")
-                    if (call.worker_id == null) {
+                    if (true) {
                         Log.d("updateCall", "getUser: $call")
                         val updates = mutableMapOf<String, Any>()
                         updates["worker_id"] = "${MySharedPreference.getWorker().id}"
@@ -145,33 +156,42 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
                             FirebaseDatabase.getInstance().reference.child("emergency_calls")
                         databaseReference.child(call.id.toString()).updateChildren(updates)
 
-//                        val coordinates = listOf(
-//                            LatLng(
-//                                call.user_location_lat!!.toDouble(),
-//                                call.user_location_long!!.toDouble()
-//                            ),
-//                            LatLng(
-//                                call.worker_location_lat!!.toDouble(),
-//                                call.worker_location_long!!.toDouble()
-//                            ),
-//                        )
+                        if (call.user_location_lat != null && call.worker_location_lat != null) {
+                            val coordinates = listOf(
+                                LatLng(
+                                    call.user_location_lat!!.toDouble(),
+                                    call.user_location_long!!.toDouble()
+                                ),
+                                LatLng(
+                                    call.worker_location_lat!!.toDouble(),
+                                    call.worker_location_long!!.toDouble()
+                                ),
+                            )
 
 
-                        /*Marker*/
-                        val markerPosition = LatLng(
-                            call.user_location_lat!!.toDouble(),
-                            call.user_location_long!!.toDouble()
-                        )
-                        val marker = googleMap.addMarker(
-                            MarkerOptions().position(markerPosition).title("Sizning manzilingiz")
-                        )
+                            /*Marker*/
+                            val markerPosition = LatLng(
+                                call.user_location_lat!!.toDouble(),
+                                call.user_location_long!!.toDouble()
+                            )
+                            marker = googleMap.addMarker(
+                                MarkerOptions().position(markerPosition).title("User manzili")
+                            )//globalga
+//                        Toast.makeText(context, "Markerga $markerPosition", Toast.LENGTH_SHORT).show()
 
-                        /*PolyLine*/
-//                        val polylineOptions = PolylineOptions().addAll(coordinates)
-//                            .color(Color.RED) // Set the color of the polyline
-//
-//                        googleMap.addPolyline(polylineOptions)
-//
+                            /*PolyLine*/
+                            val polylineOptions = PolylineOptions().addAll(coordinates)
+                                .color(Color.RED) // Set the color of the polyline
+                            //globalga
+                            polyline = googleMap.addPolyline(polylineOptions)
+                        } else {
+                            if (marker != null && polyline != null) {
+                                marker!!.remove()
+                                polyline!!.remove()
+                            }
+                            //userni polyline va markerini o'chirib tashlash
+                        }
+
 //                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(coordinates[0], 12f)
 //                        googleMap.moveCamera(cameraUpdate)
 
@@ -204,7 +224,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, LocationService.LocationList
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
 
-        ActivityCompat.requestPermissions(requireActivity(), permissions, LOCATION_PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            permissions,
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
     }
 
     // Handle the permission request result

@@ -19,7 +19,7 @@ class LocationService(private val context: Context) {
     fun startLocationUpdates(locationListener: LocationListener) {
         val locationRequest = LocationRequest.create().apply {
             interval = 10000 // Update interval in milliseconds
-            fastestInterval = 5000 // Fastest update interval in milliseconds
+            fastestInterval = 10000 // Fastest update interval in milliseconds
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
